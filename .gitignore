@@ -1,0 +1,33 @@
+# Create .gitignore file
+cat > .gitignore << 'EOF'
+# OS files
+.DS_Store
+Thumbs.db
+*.tmp
+*.swp
+*.swo
+
+# Editor files
+.vscode/
+.idea/
+*.iml
+
+# Logs
+*.log
+npm-debug.log*
+
+# Node modules (if any)
+node_modules/
+
+# Build files
+dist/
+build/
+
+# Environment files
+.env
+.env.local
+
+# Backup files
+*.bak
+*-backup
+EOF

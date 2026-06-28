@@ -1,0 +1,107 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta
+      name="description"
+      content="Adaptive bilingual learning platform for children 0-6 years"
+    />
+
+    <!-- PWA Meta Tags -->
+    <link rel="manifest" href="/little-explorer/manifest.json" />
+    <meta name="theme-color" content="#4A90D9" />
+    <meta name="apple-mobile-web-app-capable" content="yes" />
+    <meta name="apple-mobile-web-app-status-bar-style" content="default" />
+    <link
+      rel="apple-touch-icon"
+      href="/little-explorer/icons/icon-192x192.png"
+    />
+
+    <!-- Service Worker Registration -->
+    <script>
+      if ("serviceWorker" in navigator) {
+        window.addEventListener("load", function () {
+          navigator.serviceWorker
+            .register("/little-explorer/sw.js")
+            .then(function (registration) {
+              console.log("Service Worker registered successfully");
+            })
+            .catch(function (error) {
+              console.log("Service Worker registration failed:", error);
+            });
+        });
+      }
+    </script>
+
+    <title>Little Explorer — Adaptive Learning</title>
+
+    <!-- CSS -->
+    <link rel="stylesheet" href="/little-explorer/css/style.css" />
+    <link rel="stylesheet" href="css/components.css" />
+    <link rel="stylesheet" href="css/modules/sensory.css" />
+    <link rel="stylesheet" href="css/modules/nepali.css" />
+    <link rel="stylesheet" href="css/modules/games.css" />
+  </head>
+  <body>
+    <div id="app" data-age="0.8">
+      <!-- Header -->
+      <header class="app-header" role="banner">
+        <div class="header-left">
+          <h1>🌟 Little Explorer</h1>
+          <span class="version-badge">v2.0</span>
+        </div>
+
+        <div class="header-controls">
+          <!-- Age Control -->
+          <div class="age-control" aria-label="Parent settings">
+            <label for="ageSlider">
+              <span class="age-label">Age:</span>
+              <span id="ageDisplay" class="age-value">8 months</span>
+            </label>
+            <input
+              type="range"
+              id="ageSlider"
+              min="0"
+              max="6"
+              step="0.1"
+              value="0.8"
+            />
+          </div>
+
+          <!-- Language Toggle -->
+          <div class="language-control" id="languageToggle">
+            <button class="lang-btn active" data-lang="en" title="English">
+              🇬🇧 EN
+            </button>
+            <button class="lang-btn" data-lang="ne" title="नेपाली">
+              🇳🇵 ने
+            </button>
+            <button class="lang-btn" data-lang="bilingual" title="Both">
+              🌏 Both
+            </button>
+          </div>
+        </div>
+      </header>
+
+      <!-- Main Content -->
+      <main id="main-content" role="main">
+        <!-- Rendered by JavaScript -->
+      </main>
+
+      <!-- Footer -->
+      <footer class="app-footer">
+        <div class="footer-content">
+          <span>✨ Learning through play</span>
+          <span class="footer-divider">•</span>
+          <span>Session: <strong id="sessionCount">0</strong></span>
+          <span class="footer-divider">•</span>
+          <span id="moduleIndicator">Loading...</span>
+        </div>
+      </footer>
+    </div>
+
+    <!-- All JavaScript - Only ONE module script -->
+    <script type="module" src="js/app.js"></script>
+  </body>
+</html>

@@ -1,0 +1,111 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Offline - Little Explorer</title>
+    <style>
+      * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+      }
+      body {
+        font-family: -apple-system, "Segoe UI", system-ui, sans-serif;
+        background: linear-gradient(135deg, #4a90d9, #f5a623);
+        min-height: 100vh;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        padding: 20px;
+      }
+      .offline-container {
+        background: white;
+        border-radius: 24px;
+        padding: 40px;
+        max-width: 400px;
+        width: 100%;
+        text-align: center;
+        box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+      }
+      .offline-icon {
+        font-size: 64px;
+        margin-bottom: 16px;
+      }
+      h1 {
+        color: #2c3e50;
+        font-size: 24px;
+        margin-bottom: 8px;
+      }
+      p {
+        color: #7f8c8d;
+        font-size: 16px;
+        line-height: 1.6;
+        margin-bottom: 20px;
+      }
+      .retry-btn {
+        background: #4a90d9;
+        color: white;
+        border: none;
+        padding: 12px 32px;
+        border-radius: 50px;
+        font-size: 16px;
+        font-weight: 600;
+        cursor: pointer;
+        transition: all 0.3s ease;
+      }
+      .retry-btn:hover {
+        background: #3a7bc8;
+        transform: scale(1.05);
+      }
+      .retry-btn:active {
+        transform: scale(0.95);
+      }
+      .offline-features {
+        margin-top: 20px;
+        padding-top: 20px;
+        border-top: 2px solid #f0f0f0;
+        text-align: left;
+      }
+      .offline-features h3 {
+        font-size: 14px;
+        color: #2c3e50;
+        margin-bottom: 8px;
+      }
+      .offline-features ul {
+        list-style: none;
+        padding: 0;
+      }
+      .offline-features li {
+        color: #7f8c8d;
+        font-size: 13px;
+        padding: 4px 0;
+      }
+      .offline-features li::before {
+        content: "✅ ";
+      }
+    </style>
+  </head>
+  <body>
+    <div class="offline-container">
+      <div class="offline-icon">🌐</div>
+      <h1>You're Offline</h1>
+      <p>
+        Don't worry! You can still use Little Explorer with previously loaded
+        content.
+      </p>
+      <button class="retry-btn" onclick="window.location.reload()">
+        🔄 Try Again
+      </button>
+      <div class="offline-features">
+        <h3>Available Offline:</h3>
+        <ul>
+          <li>Previous learning progress</li>
+          <li>Completed lessons</li>
+          <li>Saved stars and scores</li>
+          <li>All cached games</li>
+        </ul>
+      </div>
+    </div>
+  </body>
+</html>

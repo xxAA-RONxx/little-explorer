@@ -7,9 +7,7 @@
   "background_color": "#FAFAFA",
   "theme_color": "#4A90D9",
   "orientation": "portrait",
-  "categories": ["education", "kids", "learning"],
-  "lang": "en",
-  "dir": "ltr",
+  "scope": "/little-explorer/",
   "icons": [
     {
       "src": "/little-explorer/icons/icon-72x72.png",
@@ -59,17 +57,5 @@
       "type": "image/png",
       "purpose": "any maskable"
     }
-  ],
-  "screenshots": [
-    {
-      "src": "/little-explorer/screenshots/screenshot-1.png",
-      "sizes": "1080x1920",
-      "type": "image/png",
-      "platform": "android",
-      "label": "Little Explorer - Learning Games"
-    }
-  ],
-  "prefer_related_applications": false,
-  "related_applications": [],
-  "scope": "/little-explorer/"
+  ]
 }

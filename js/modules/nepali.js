@@ -1021,37 +1021,54 @@ export class NepaliModule {
     }
 
     checkLessonTranslation(inputField, possibleAnswers, feedbackLabel, itemIndex) {
-        const userAnswer = inputField.value.trim().toLowerCase();
+    const userAnswer = inputField.value.trim().toLowerCase();
 
-        feedbackLabel.className = 'lesson-feedback';
-        inputField.className = 'lesson-input';
+    feedbackLabel.className = 'lesson-feedback';
+    inputField.className = 'lesson-input';
 
-        if (possibleAnswers.includes(userAnswer)) {
-            feedbackLabel.textContent = this.t('correct');
-            feedbackLabel.className = 'lesson-feedback correct';
-            inputField.disabled = true;
-            inputField.className = 'lesson-input correct';
-            this.currentLessonItems[itemIndex].isCorrect = true;
-        } else {
-            const accepted = possibleAnswers.slice(0, 4).join(', ');
-            feedbackLabel.textContent = `${this.t('tryAgain')} (${accepted})`;
-            feedbackLabel.className = 'lesson-feedback wrong';
-            inputField.className = 'lesson-input wrong';
-            this.currentLessonItems[itemIndex].isCorrect = false;
+    // Check if answer is in possible answers
+    let isCorrect = false;
+    for (let i = 0; i < possibleAnswers.length; i++) {
+        if (userAnswer === possibleAnswers[i]) {
+            isCorrect = true;
+            break;
         }
-        this.checkLessonCompletionStatus();
     }
 
+    if (isCorrect) {
+        feedbackLabel.textContent = '✅ ' + this.t('correct');
+        feedbackLabel.className = 'lesson-feedback correct';
+        inputField.disabled = true;
+        inputField.className = 'lesson-input correct';
+        this.currentLessonItems[itemIndex].isCorrect = true;
+    } else {
+        let accepted = '';
+        for (let i = 0; i < Math.min(4, possibleAnswers.length); i++) {
+            if (i > 0) accepted += ', ';
+            accepted += possibleAnswers[i];
+        }
+        feedbackLabel.textContent = '❌ ' + this.t('tryAgain') + ' (' + accepted + ')';
+        feedbackLabel.className = 'lesson-feedback wrong';
+        inputField.className = 'lesson-input wrong';
+        this.currentLessonItems[itemIndex].isCorrect = false;
+    }
+    this.checkLessonCompletionStatus();
+}
+
     // ===== CHECK LESSON COMPLETION STATUS =====
+// ===== CHECK LESSON COMPLETION STATUS =====
 checkLessonCompletionStatus() {
     const completeBtn = document.getElementById('lessonCompleteBtn');
     if (!completeBtn) return;
     
     // Check if all items are correct
-    const allCorrect = this.currentLessonItems.length > 0 && 
-                      this.currentLessonItems.every(function(item) {
-                          return item.isCorrect === true;
-                      });
+    let allCorrect = this.currentLessonItems.length > 0;
+    for (let i = 0; i < this.currentLessonItems.length; i++) {
+        if (!this.currentLessonItems[i].isCorrect) {
+            allCorrect = false;
+            break;
+        }
+    }
     
     if (allCorrect) {
         completeBtn.disabled = false;
@@ -1060,9 +1077,11 @@ checkLessonCompletionStatus() {
     } else {
         completeBtn.disabled = true;
         completeBtn.classList.remove('ready');
-        const completed = this.currentLessonItems.filter(function(item) { return item.isCorrect; }).length;
-        const total = this.currentLessonItems.length;
-        completeBtn.textContent = `📝 ${completed}/${total} ${this.t('markLessonComplete')}`;
+        let completed = 0;
+        for (let j = 0; j < this.currentLessonItems.length; j++) {
+            if (this.currentLessonItems[j].isCorrect) completed++;
+        }
+        completeBtn.textContent = '📝 ' + completed + '/' + this.currentLessonItems.length + ' ' + this.t('markLessonComplete');
     }
 }
 
@@ -1077,17 +1096,19 @@ handleLessonComplete() {
     lessonTitle = lessonTitle.replace(/[📚⭐🌟🚀✅]|\(.*\)/g, '').trim();
     
     // Find the lesson index
-    const currentLessonIndex = LESSONS.findIndex(function(l) {
-        return l.title === lessonTitle;
-    });
+    let foundIndex = -1;
+    for (let i = 0; i < LESSONS.length; i++) {
+        if (LESSONS[i].title === lessonTitle) {
+            foundIndex = i;
+            break;
+        }
+    }
     
     // If not found, try partial match
-    let foundIndex = currentLessonIndex;
     if (foundIndex === -1) {
-        // Try to find by partial match
-        for (let i = 0; i < LESSONS.length; i++) {
-            if (lessonTitle.includes(LESSONS[i].title) || LESSONS[i].title.includes(lessonTitle)) {
-                foundIndex = i;
+        for (let j = 0; j < LESSONS.length; j++) {
+            if (lessonTitle.includes(LESSONS[j].title) || LESSONS[j].title.includes(lessonTitle)) {
+                foundIndex = j;
                 break;
             }
         }
@@ -1101,7 +1122,8 @@ handleLessonComplete() {
         StorageService.addStar();
         
         // Visual feedback - mark all as completed
-        this.currentLessonItems.forEach(function(item) {
+        for (let k = 0; k < this.currentLessonItems.length; k++) {
+            const item = this.currentLessonItems[k];
             item.rowElement.classList.add('completed');
             item.entry.className = 'lesson-input completed';
             item.entry.disabled = true;
@@ -1109,7 +1131,7 @@ handleLessonComplete() {
                 item.feedbackLabel.textContent = '✅';
                 item.feedbackLabel.className = 'lesson-feedback completed';
             }
-        });
+        }
 
         const emoji = LESSONS[foundIndex].emoji || '📚';
         titleEl.textContent = '✅ ' + emoji + ' ' + LESSONS[foundIndex].title + ' - ' + this.t('correct') + ' ⭐';
@@ -1133,38 +1155,55 @@ handleLessonComplete() {
         this.renderLessonButtons();
         
         // Show success message
-        const feedback = document.getElementById('lessonFeedback');
-        if (!feedback) {
-            // Create feedback element if it doesn't exist
-            const container = document.getElementById('lessonItemsContainer');
-            if (container) {
-                const fb = document.createElement('div');
-                fb.id = 'lessonFeedback';
-                fb.className = 'game-feedback correct';
-                fb.textContent = '🎉 ' + (this.language === 'ne' ? 'पाठ पूरा भयो! राम्रो!' : 'Lesson complete! Great job!');
-                container.parentNode.insertBefore(fb, container.nextSibling);
-                setTimeout(function() {
-                    fb.style.opacity = '0';
-                    setTimeout(function() { fb.remove(); }, 500);
-                }, 3000);
-            }
+        const container = document.getElementById('lessonItemsContainer');
+        if (container) {
+            // Remove existing feedback
+            const existingFeedback = document.getElementById('lessonFeedback');
+            if (existingFeedback) existingFeedback.remove();
+            
+            const fb = document.createElement('div');
+            fb.id = 'lessonFeedback';
+            fb.className = 'game-feedback correct';
+            fb.textContent = '🎉 ' + (this.language === 'ne' ? 'पाठ पूरा भयो! राम्रो!' : 'Lesson complete! Great job!');
+            container.parentNode.insertBefore(fb, container.nextSibling);
+            
+            // Auto-remove after 3 seconds
+            const self = this;
+            setTimeout(function() {
+                const fbEl = document.getElementById('lessonFeedback');
+                if (fbEl) {
+                    fbEl.style.opacity = '0';
+                    setTimeout(function() {
+                        const fbToRemove = document.getElementById('lessonFeedback');
+                        if (fbToRemove) fbToRemove.remove();
+                    }, 500);
+                }
+            }, 3000);
         }
     } else if (foundIndex !== -1 && this.lessonsProgress.has(foundIndex)) {
         // Lesson already completed
-        const feedback = document.getElementById('lessonFeedback');
-        if (!feedback) {
-            const container = document.getElementById('lessonItemsContainer');
-            if (container) {
-                const fb = document.createElement('div');
-                fb.id = 'lessonFeedback';
-                fb.className = 'game-feedback';
-                fb.textContent = '✅ ' + (this.language === 'ne' ? 'यो पाठ पहिले नै पूरा भइसकेको छ!' : 'This lesson is already completed!');
-                container.parentNode.insertBefore(fb, container.nextSibling);
-                setTimeout(function() {
-                    fb.style.opacity = '0';
-                    setTimeout(function() { fb.remove(); }, 500);
-                }, 2000);
-            }
+        const container = document.getElementById('lessonItemsContainer');
+        if (container) {
+            // Remove existing feedback
+            const existingFeedback = document.getElementById('lessonFeedback');
+            if (existingFeedback) existingFeedback.remove();
+            
+            const fb = document.createElement('div');
+            fb.id = 'lessonFeedback';
+            fb.className = 'game-feedback';
+            fb.textContent = '✅ ' + (this.language === 'ne' ? 'यो पाठ पहिले नै पूरा भइसकेको छ!' : 'This lesson is already completed!');
+            container.parentNode.insertBefore(fb, container.nextSibling);
+            
+            setTimeout(function() {
+                const fbEl = document.getElementById('lessonFeedback');
+                if (fbEl) {
+                    fbEl.style.opacity = '0';
+                    setTimeout(function() {
+                        const fbToRemove = document.getElementById('lessonFeedback');
+                        if (fbToRemove) fbToRemove.remove();
+                    }, 500);
+                }
+            }, 2000);
         }
     }
 }

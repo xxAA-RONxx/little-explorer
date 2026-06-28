@@ -4,63 +4,31 @@
  */
 import { StorageService } from './storage.js';
 
+// ===== LANGUAGE SERVICE =====
 export class LanguageService {
     static SUPPORTED_LANGUAGES = {
-        en: {
-            code: 'en',
-            name: 'English',
-            flag: '🇬🇧',
-            script: 'roman',
-            direction: 'ltr',
-            fallback: 'en-US'
-        },
-        ne: {
-            code: 'ne',
-            name: 'नेपाली',
-            flag: '🇳🇵',
-            script: 'devanagari',
-            direction: 'ltr',
-            fallback: 'ne-NP'
-        },
-        bilingual: {
-            code: 'bilingual',
-            name: 'Both',
-            flag: '🌏',
-            script: 'mixed',
-            direction: 'ltr',
-            fallback: 'en-US'
-        }
+        en: { code: 'en', name: 'English', flag: '🇬🇧', direction: 'ltr' },
+        ne: { code: 'ne', name: 'नेपाली', flag: '🇳🇵', direction: 'ltr' },
+        bilingual: { code: 'bilingual', name: 'Both', flag: '🌏', direction: 'ltr' }
     };
 
-    /**
-     * Get the current language from storage
-     */
+    // ===== LANGUAGE MANAGEMENT =====
+    
     static getCurrentLanguage() {
-        return StorageService.getLanguage() || 'en';
+        return StorageService.get('language', 'en');
     }
 
-    /**
-     * Set the current language
-     */
     static setLanguage(lang) {
         if (!this.SUPPORTED_LANGUAGES[lang]) {
-            console.warn(`[Language] Unsupported language: ${lang}`);
+            console.warn('[Language] Unsupported:', lang);
             return false;
         }
         
-        StorageService.setLanguage(lang);
-        
-        // Update document attributes
-        document.documentElement.lang = lang;
-        const langData = this.SUPPORTED_LANGUAGES[lang];
-        document.documentElement.dir = langData.direction;
+        StorageService.set('language', lang);
         
         // Dispatch event for modules to react
         window.dispatchEvent(new CustomEvent('languageChanged', {
-            detail: { 
-                language: lang,
-                data: langData
-            }
+            detail: { language: lang }
         }));
         
         return true;
@@ -96,6 +64,8 @@ export class LanguageService {
         return data ? data.name : lang;
     }
 
+    // ===== LANGUAGE CHECKS =====
+
     /**
      * Check if in bilingual mode
      */
@@ -117,19 +87,22 @@ export class LanguageService {
         return this.getCurrentLanguage() === 'en';
     }
 
+    // ===== TRANSLATION =====
+
     /**
      * Get the appropriate translation based on current language
-     * This is a simple implementation - can be expanded with JSON files
      */
     static translate(key, lang = null) {
         const currentLang = lang || this.getCurrentLanguage();
         
-        // Simple translation map for UI elements
+        // Translation map for UI elements
         const translations = {
             // Module names
             'module.sensory': { en: 'Sensory Baby', ne: 'संवेदनशील बच्चा', bilingual: '👶 Sensory' },
             'module.explorer': { en: 'Toddler Explorer', ne: 'टोडलर एक्सप्लोरर', bilingual: '🔍 Explorer' },
             'module.nepali': { en: 'Nepali Learning', ne: 'नेपाली सिकाई', bilingual: '🇳🇵 Nepali' },
+            'module.nepaliSimple': { en: 'Nepali (Simple)', ne: 'सरल नेपाली', bilingual: '🇳🇵 Simple Nepali' },
+            'module.games': { en: 'Learning Games', ne: 'शिक्षण खेलहरू', bilingual: '🎮 Games' },
             'module.preschool': { en: 'Preschool Pro', ne: 'प्रिस्कूल प्रो', bilingual: '🎓 Preschool' },
             
             // Common UI
@@ -153,25 +126,27 @@ export class LanguageService {
         if (!translation) return key;
         
         if (currentLang === 'bilingual') {
-            return translation.bilingual || `${translation.en} / ${translation.ne}`;
+            return translation.bilingual || translation.en + ' / ' + translation.ne;
         }
         
         return translation[currentLang] || translation.en || key;
     }
+
+    // ===== UI HELPERS =====
 
     /**
      * Get language-specific CSS class
      */
     static getLanguageClass() {
         const lang = this.getCurrentLanguage();
-        return `lang-${lang}`;
+        return 'lang-' + lang;
     }
 
     /**
      * Listen for language changes
      */
     static onLanguageChange(callback) {
-        window.addEventListener('languageChanged', (event) => {
+        window.addEventListener('languageChanged', function(event) {
             callback(event.detail);
         });
     }

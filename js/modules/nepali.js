@@ -1042,65 +1042,132 @@ export class NepaliModule {
         this.checkLessonCompletionStatus();
     }
 
-    checkLessonCompletionStatus() {
-        const completeBtn = document.getElementById('lessonCompleteBtn');
-        const allCorrect = this.currentLessonItems.length > 0 && 
-                          this.currentLessonItems.every(item => item.isCorrect);
-        if (completeBtn) {
-            completeBtn.disabled = !allCorrect;
-            if (allCorrect) {
-                completeBtn.classList.add('ready');
-            } else {
-                completeBtn.classList.remove('ready');
+    // ===== CHECK LESSON COMPLETION STATUS =====
+checkLessonCompletionStatus() {
+    const completeBtn = document.getElementById('lessonCompleteBtn');
+    if (!completeBtn) return;
+    
+    // Check if all items are correct
+    const allCorrect = this.currentLessonItems.length > 0 && 
+                      this.currentLessonItems.every(function(item) {
+                          return item.isCorrect === true;
+                      });
+    
+    if (allCorrect) {
+        completeBtn.disabled = false;
+        completeBtn.classList.add('ready');
+        completeBtn.textContent = '✅ ' + this.t('markLessonComplete');
+    } else {
+        completeBtn.disabled = true;
+        completeBtn.classList.remove('ready');
+        const completed = this.currentLessonItems.filter(function(item) { return item.isCorrect; }).length;
+        const total = this.currentLessonItems.length;
+        completeBtn.textContent = `📝 ${completed}/${total} ${this.t('markLessonComplete')}`;
+    }
+}
+
+// ===== COMPLETE CURRENT LESSON =====
+handleLessonComplete() {
+    const titleEl = document.getElementById('lessonTitle');
+    if (!titleEl) return;
+    
+    // Extract the lesson title (remove emojis and extra text)
+    let lessonTitle = titleEl.textContent;
+    // Remove emojis and parentheses content
+    lessonTitle = lessonTitle.replace(/[📚⭐🌟🚀✅]|\(.*\)/g, '').trim();
+    
+    // Find the lesson index
+    const currentLessonIndex = LESSONS.findIndex(function(l) {
+        return l.title === lessonTitle;
+    });
+    
+    // If not found, try partial match
+    let foundIndex = currentLessonIndex;
+    if (foundIndex === -1) {
+        // Try to find by partial match
+        for (let i = 0; i < LESSONS.length; i++) {
+            if (lessonTitle.includes(LESSONS[i].title) || LESSONS[i].title.includes(lessonTitle)) {
+                foundIndex = i;
+                break;
             }
         }
     }
 
-    handleLessonComplete() {
-        const titleEl = document.getElementById('lessonTitle');
-        if (!titleEl) return;
+    if (foundIndex !== -1 && !this.lessonsProgress.has(foundIndex)) {
+        this.lessonsProgress.add(foundIndex);
+        StorageService.set('nepaliProgress', Array.from(this.lessonsProgress));
         
-        const currentLessonIndex = LESSONS.findIndex(l => l.title === titleEl.textContent.replace(/[📚⭐🌟🚀]|\(.*\)/g, '').trim());
-
-        if (currentLessonIndex !== -1 && !this.lessonsProgress.has(currentLessonIndex)) {
-            this.lessonsProgress.add(currentLessonIndex);
-            StorageService.setNepaliProgress(Array.from(this.lessonsProgress));
-            
-            // Award stars for completing lessons
-            StorageService.addStar();
-            
-            // Visual feedback
-            this.currentLessonItems.forEach(item => {
-                item.rowElement.classList.add('completed');
-                item.entry.className = 'lesson-input completed';
-                item.entry.disabled = true;
-                if (item.feedbackLabel) {
-                    item.feedbackLabel.textContent = '✅';
-                    item.feedbackLabel.className = 'lesson-feedback completed';
-                }
-            });
-
-            const emoji = LESSONS[currentLessonIndex].emoji || '📚';
-            titleEl.textContent = `✅ ${emoji} ${LESSONS[currentLessonIndex].title} - ${this.t('correct')} ⭐`;
-            
-            // Update progress bar
-            const progressBar = document.querySelector('.progress-bar');
-            const progressText = document.querySelector('.progress-text');
-            if (progressBar) {
-                const percent = (this.lessonsProgress.size / LESSONS.length) * 100;
-                progressBar.style.width = `${percent}%`;
-                if (progressText) progressText.textContent = `${Math.round(percent)}%`;
+        // Award stars for completing lessons
+        StorageService.addStar();
+        
+        // Visual feedback - mark all as completed
+        this.currentLessonItems.forEach(function(item) {
+            item.rowElement.classList.add('completed');
+            item.entry.className = 'lesson-input completed';
+            item.entry.disabled = true;
+            if (item.feedbackLabel) {
+                item.feedbackLabel.textContent = '✅';
+                item.feedbackLabel.className = 'lesson-feedback completed';
             }
-            
-            // Update stats
-            const statBadge = document.querySelector('.stat-badge:last-child');
-            if (statBadge) {
-                statBadge.textContent = `📚 ${this.lessonsProgress.size}/${LESSONS.length} lessons`;
+        });
+
+        const emoji = LESSONS[foundIndex].emoji || '📚';
+        titleEl.textContent = '✅ ' + emoji + ' ' + LESSONS[foundIndex].title + ' - ' + this.t('correct') + ' ⭐';
+        
+        // Update progress bar
+        const progressBar = document.querySelector('.progress-bar');
+        const progressText = document.querySelector('.progress-text');
+        if (progressBar) {
+            const percent = (this.lessonsProgress.size / LESSONS.length) * 100;
+            progressBar.style.width = percent + '%';
+            if (progressText) progressText.textContent = Math.round(percent) + '%';
+        }
+        
+        // Update stats
+        const statBadge = document.querySelector('.stat-badge:last-child');
+        if (statBadge) {
+            statBadge.textContent = '📚 ' + this.lessonsProgress.size + '/' + LESSONS.length + ' lessons';
+        }
+        
+        // Re-render lesson buttons
+        this.renderLessonButtons();
+        
+        // Show success message
+        const feedback = document.getElementById('lessonFeedback');
+        if (!feedback) {
+            // Create feedback element if it doesn't exist
+            const container = document.getElementById('lessonItemsContainer');
+            if (container) {
+                const fb = document.createElement('div');
+                fb.id = 'lessonFeedback';
+                fb.className = 'game-feedback correct';
+                fb.textContent = '🎉 ' + (this.language === 'ne' ? 'पाठ पूरा भयो! राम्रो!' : 'Lesson complete! Great job!');
+                container.parentNode.insertBefore(fb, container.nextSibling);
+                setTimeout(function() {
+                    fb.style.opacity = '0';
+                    setTimeout(function() { fb.remove(); }, 500);
+                }, 3000);
             }
-            
-            this.renderLessonButtons();
+        }
+    } else if (foundIndex !== -1 && this.lessonsProgress.has(foundIndex)) {
+        // Lesson already completed
+        const feedback = document.getElementById('lessonFeedback');
+        if (!feedback) {
+            const container = document.getElementById('lessonItemsContainer');
+            if (container) {
+                const fb = document.createElement('div');
+                fb.id = 'lessonFeedback';
+                fb.className = 'game-feedback';
+                fb.textContent = '✅ ' + (this.language === 'ne' ? 'यो पाठ पहिले नै पूरा भइसकेको छ!' : 'This lesson is already completed!');
+                container.parentNode.insertBefore(fb, container.nextSibling);
+                setTimeout(function() {
+                    fb.style.opacity = '0';
+                    setTimeout(function() { fb.remove(); }, 500);
+                }, 2000);
+            }
         }
     }
+}
 
     handleResetProgress() {
         if (confirm('Are you sure you want to reset all lesson progress?')) {

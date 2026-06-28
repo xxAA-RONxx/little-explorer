@@ -1,6 +1,6 @@
 // Service Worker for Little Explorer PWA
 const CACHE_NAME = 'little-explorer-v2.0.0';
-const OFFLINE_URL = '/little-explorer/offline.html';
+const OFFLINE_URL = '/little-explorers/offline.html';
 
 // Assets to cache on install
 const ASSETS = [

@@ -5,6 +5,7 @@ import { SensoryModule } from './modules/sensory.js';
 import { ExplorerModule } from './modules/explorer.js';
 import { NepaliModule } from './modules/nepali.js';
 import { GamesModule } from './modules/games.js';
+import { NepaliSimpleModule } from './modules/nepali-simple.js';
 
 // ===== MODULE REGISTRY =====
 const MODULES = {
@@ -35,6 +36,15 @@ const MODULES = {
         component: NepaliModule,
         description: 'Learn Nepali alphabet, words, and phrases'
     },
+    simpleNepali: {
+    key: 'simpleNepali',
+    name: 'Nepali (Simple)',
+    icon: '🇳🇵',
+    minAge: 2.0,
+    maxAge: 4.0,
+    component: NepaliSimpleModule,
+    description: 'Simple Nepali words for toddlers'
+},
     games: {
         key: 'games',
         name: 'Learning Games',
@@ -220,24 +230,28 @@ function updateAge(newAge) {
     }
 }
 
-/**
- * Update language and refresh current module
- */
+// ===== UPDATE LANGUAGE =====
 function updateLanguage(lang) {
     state.language = lang;
     LanguageService.setLanguage(lang);
     
     // Update language toggle UI
-    document.querySelectorAll('.lang-btn').forEach(btn => {
+    document.querySelectorAll('.lang-btn').forEach(function(btn) {
         btn.classList.toggle('active', btn.dataset.lang === lang);
     });
+    
+    // Update the language attribute on the app container
+    document.getElementById('app').dataset.language = lang;
+    
+    // Update HTML lang attribute
+    document.documentElement.lang = lang;
     
     // Reload current module to apply language changes
     if (state.activeModuleKey) {
         loadModule(state.activeModuleKey);
     }
     
-    console.log(`[App] Language changed to: ${lang}`);
+    console.log('[App] Language changed to:', lang);
 }
 
 /**

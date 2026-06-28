@@ -1006,3 +1006,236 @@
         flex-wrap: wrap;
     }
 }
+
+/* ===== Simple Nepali Module ===== */
+.nepali-simple-module {
+    max-width: 600px;
+    margin: 0 auto;
+    padding: 1rem;
+}
+
+.simple-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 0.5rem 0;
+    border-bottom: 2px solid var(--color-border);
+    margin-bottom: 1rem;
+}
+
+.simple-header h2 {
+    font-size: 1.5rem;
+    color: var(--color-primary);
+}
+
+.simple-stats {
+    font-size: 1.2rem;
+    font-weight: 600;
+}
+
+.simple-progress {
+    height: 8px;
+    background: #F0F0F0;
+    border-radius: 4px;
+    overflow: hidden;
+    margin-bottom: 1.5rem;
+}
+
+.simple-progress .progress-bar {
+    height: 100%;
+    background: linear-gradient(90deg, var(--color-primary), var(--color-success));
+    transition: width 0.5s ease;
+}
+
+/* ===== Word Display ===== */
+.word-display {
+    text-align: center;
+    padding: 2rem;
+    background: white;
+    border-radius: var(--radius-lg);
+    border: 3px solid var(--color-border);
+    margin-bottom: 1rem;
+    min-height: 200px;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+}
+
+.word-emoji {
+    font-size: 4rem;
+    margin-bottom: 0.5rem;
+}
+
+.word-nepali {
+    font-size: 3rem;
+    font-weight: 700;
+    color: var(--color-text);
+    font-family: 'Noto Sans Devanagari', sans-serif;
+}
+
+.word-phonetic {
+    font-size: 1rem;
+    color: #7F8C8D;
+    margin-top: 0.25rem;
+}
+
+.word-english {
+    font-size: 1.5rem;
+    font-weight: 600;
+    color: var(--color-success);
+    margin-top: 0.5rem;
+    min-height: 2rem;
+}
+
+/* ===== Sound Button ===== */
+.sound-btn {
+    display: block;
+    width: 100%;
+    padding: 0.8rem;
+    background: var(--color-primary);
+    color: white;
+    border: none;
+    border-radius: var(--radius);
+    font-size: 1.1rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    margin-bottom: 1rem;
+}
+
+.sound-btn:hover {
+    background: #3A7BC8;
+    transform: scale(1.02);
+}
+
+.sound-btn:active {
+    transform: scale(0.95);
+}
+
+/* ===== Word Options ===== */
+.word-options {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 0.75rem;
+    margin: 1rem 0;
+}
+
+.word-option {
+    padding: 1rem;
+    border: 3px solid var(--color-border);
+    border-radius: var(--radius);
+    background: white;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    font-size: 1.2rem;
+}
+
+.word-option:hover:not(:disabled) {
+    transform: scale(1.03);
+    border-color: var(--color-primary);
+    box-shadow: 0 4px 12px var(--color-shadow);
+}
+
+.word-option:disabled {
+    cursor: not-allowed;
+    opacity: 0.7;
+}
+
+.word-option .option-emoji {
+    font-size: 1.8rem;
+}
+
+.word-option .option-text {
+    font-weight: 600;
+}
+
+.word-option.correct {
+    border-color: var(--color-success);
+    background: #D5F5E3;
+}
+
+.word-option.wrong {
+    border-color: var(--color-danger);
+    background: #FDEDEC;
+}
+
+/* ===== Feedback ===== */
+.simple-feedback {
+    text-align: center;
+    font-size: 1.2rem;
+    font-weight: 600;
+    min-height: 40px;
+    padding: 0.5rem;
+    border-radius: var(--radius);
+}
+
+.simple-feedback.correct {
+    color: var(--color-success);
+}
+
+.simple-feedback.wrong {
+    color: var(--color-danger);
+}
+
+/* ===== Next Button ===== */
+.next-btn {
+    display: block;
+    width: 100%;
+    padding: 0.8rem;
+    background: var(--color-success);
+    color: white;
+    border: none;
+    border-radius: var(--radius);
+    font-size: 1.1rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    margin-top: 0.5rem;
+}
+
+.next-btn:hover {
+    background: #219A52;
+    transform: scale(1.02);
+}
+
+/* ===== Lesson Progress ===== */
+.lesson-progress {
+    text-align: center;
+    padding: 0.5rem;
+    color: #7F8C8D;
+    font-size: 0.9rem;
+    margin-top: 0.5rem;
+}
+
+/* ===== Responsive ===== */
+@media (max-width: 480px) {
+    .word-options {
+        grid-template-columns: 1fr;
+    }
+    
+    .word-display {
+        padding: 1.5rem;
+        min-height: 150px;
+    }
+    
+    .word-nepali {
+        font-size: 2.5rem;
+    }
+    
+    .word-emoji {
+        font-size: 3rem;
+    }
+    
+    .word-option {
+        padding: 0.75rem;
+        font-size: 1rem;
+    }
+    
+    .word-option .option-emoji {
+        font-size: 1.5rem;
+    }
+}

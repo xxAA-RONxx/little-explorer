@@ -9,13 +9,13 @@
     />
 
     <!-- PWA Meta Tags -->
-    <link rel="manifest" href="/little-explorer/manifest.json" />
+    <link rel="manifest" href="/little-explorers/manifest.json" />
     <meta name="theme-color" content="#4A90D9" />
     <meta name="apple-mobile-web-app-capable" content="yes" />
     <meta name="apple-mobile-web-app-status-bar-style" content="default" />
     <link
       rel="apple-touch-icon"
-      href="/little-explorer/icons/icon-192x192.png"
+      href="/little-explorers/icons/icon-192x192.png"
     />
 
     <!-- Service Worker Registration -->
@@ -23,7 +23,7 @@
       if ("serviceWorker" in navigator) {
         window.addEventListener("load", function () {
           navigator.serviceWorker
-            .register("/little-explorer/sw.js")
+            .register("/little-explorers/sw.js")
             .then(function (registration) {
               console.log("Service Worker registered successfully");
             })
@@ -37,7 +37,7 @@
     <title>Little Explorer — Adaptive Learning</title>
 
     <!-- CSS -->
-    <link rel="stylesheet" href="/little-explorer/css/style.css" />
+    <link rel="stylesheet" href="/little-explorers/css/style.css" />
     <link rel="stylesheet" href="css/components.css" />
     <link rel="stylesheet" href="css/modules/sensory.css" />
     <link rel="stylesheet" href="css/modules/nepali.css" />

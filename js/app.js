@@ -30,7 +30,7 @@ const MODULES = {
     nepali: {
         key: 'nepali',
         name: 'Nepali Learning',
-        icon: '🇳🇵',
+        icon: '📚',
         minAge: 2.0,
         maxAge: 6.0,
         component: NepaliModule,
@@ -39,7 +39,7 @@ const MODULES = {
     simpleNepali: {
     key: 'simpleNepali',
     name: 'Nepali (Simple)',
-    icon: '🇳🇵',
+    icon: '🌱',
     minAge: 2.0,
     maxAge: 4.0,
     component: NepaliSimpleModule,
